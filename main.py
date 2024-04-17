@@ -31,7 +31,7 @@ class Agent:
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
         self.type = type
-        # start agents meters from any values between 50 -70
+        # start agents meters from any values between 50 and 70
         self.studyingMeter = random.randint(50, 70)
         self.partyMeter = random.randint(50, 70)
         self.exerciseMeter = random.randint(50, 70)
@@ -61,43 +61,41 @@ def initialize() :
 
     global partyLocation_x, partyLocation_y, libraryLocation_x, libraryLocation_y, gymLocation_x, gymLocation_y, agent_list
 
-    # initialize the location of the party, library, and gym
-
-
     # Each time this for loop runs, an agent is randomly created 
     for type in ["academic", "sports", "party"] :
-        for i in range(50) : # There are 100 of each type of agent        
-                 
-            overlapped = True
+        for i in range(50) : # There are 50 of each type of agent  
+                  
+            #to prevent agents from being initialized inside a location, we regenrate their coordinates until they are not  
+            overlapped = True # boolean to keep track if an agent is in a location
             while overlapped:
-                x_coord = random.uniform(0,1)
-                y_coord = random.uniform(0,1)
-                if np.abs(x_coord - libraryLocation_x) <= .1 and np.abs(y_coord - libraryLocation_y) <= .1 :
+                x_coord = random.uniform(0,1) # resets agents x coord
+                y_coord = random.uniform(0,1) # resets agents y coord
+                if np.abs(x_coord - libraryLocation_x) <= .1 and np.abs(y_coord - libraryLocation_y) <= .1 : # checks if agent is within library
+                    overlapped = True # if so, overlapped becomes true
+                elif np.abs(x_coord - partyLocation_x) <= .1 and np.abs(y_coord - partyLocation_y) <= .1 :# checks if agent is within party
                     overlapped = True
-                elif np.abs(x_coord - partyLocation_x) <= .1 and np.abs(y_coord - partyLocation_y) <= .1 :
-                    overlapped = True
-                elif np.abs(x_coord - gymLocation_x) <= .1 and np.abs(y_coord - gymLocation_y) <= .1 :
+                elif np.abs(x_coord - gymLocation_x) <= .1 and np.abs(y_coord - gymLocation_y) <= .1 :# checks if agent is within gym
                     overlapped = True
                 else :
                     overlapped = False
 
-            agent_type = type
-            new_agent = Agent(x_coord, y_coord, agent_type)
+            agent_type = type 
+            new_agent = Agent(x_coord, y_coord, agent_type) # creates our agent
             
-            agent_list.append(new_agent)
+            agent_list.append(new_agent) # appends new agent to our list
            
 
 
-#makes sure that the agent stays within the array# ensures
+#makes sure that the agent stays within the array
 def keepInBounds(agent):
-    if agent.x_coordinate > 1 :
-        agent.x_coordinate = 1
-    elif agent.x_coordinate < 0 :
-        agent.x_coordinate = 0
-    if agent.y_coordinate > 1 :
-        agent.y_coordinate = 1
-    elif agent.y_coordinate < 0 :
-        agent.y_coordinate = 0
+    if agent.x_coordinate > 1 : # if agents x coordinate is above 1
+        agent.x_coordinate = 1 # x = 1
+    elif agent.x_coordinate < 0 : # if agents x coordinate is below 0
+        agent.x_coordinate = 0 # x = 0
+    if agent.y_coordinate > 1 : # if agents y coordinate is above 1
+        agent.y_coordinate = 1 # y = 1
+    elif agent.y_coordinate < 0 :# if agents y coordinate is below 0
+        agent.y_coordinate = 0 # y=0
 
 def countNeighbors(agent):
     global totalInteractions, current_timestep
@@ -199,10 +197,10 @@ def move(current_agent):
         if current_agent.exerciseMeter < current_agent.exerciseThreshold:
             belowMeter = True
 
-    # if below meter is true agents' step size will be 0.06
+    # if below meter is true agents' step size will be 0.12
     if belowMeter == True:
         stepSize = 0.12
-    else: # otherwise it will be 0.03
+    else: # otherwise it will be 0.06
         stepSize = 0.06
 
     #calculate the vector length from agents current location to target + normalize
@@ -233,11 +231,11 @@ def rules(current_agent) :
     # count the number of interactions an agent has with agents of dissimilar types (i.e. agents that are in a 0.05 radius)
     numInteractions = countNeighbors(current_agent)
 
-    # if two agents are within 0.01 of eachother move them 0.03 away so they do not end up right on top
+    # if two agents are within 0.01 of each other, randomly move them so they do not end up right on top of each other
     for agent in agent_list :
         for other_agent in agent_list :
-            if agent.distanceTo(other_agent.x_coordinate, other_agent.y_coordinate) <= .01 and agent != other_agent:
-                agent.x_coordinate += random.uniform(-.03, .03)
+            if agent.distanceTo(other_agent.x_coordinate, other_agent.y_coordinate) <= .01 and agent != other_agent: # if agents are within a 0.1 radius of each other
+                agent.x_coordinate += random.uniform(-.03, .03) # move their x and y locations 0.03 away from eachother
                 agent.y_coordinate += random.uniform(-.03, .03)
                 other_agent.x_coordinate += random.uniform(-.03, .03)
                 other_agent.y_coordinate += random.uniform(-.03, .03) 
@@ -252,67 +250,68 @@ def updateMeters(agent):
     # if an agent is within the party
     if agent.distanceTo(partyLocation_x, partyLocation_y) < 0.1:
         if agent.type == "academic":
-            agent.partyMeter += 15 # increase the party meter by 10
+            agent.partyMeter += 15 # increase the party meter by 15
             agent.studyingMeter -= 5 # decrease the studying meter by 5
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
         elif agent.type == "sports":
-            agent.partyMeter += 15 # increase the party meter by 10
+            agent.partyMeter += 15 # increase the party meter by 15
             agent.studyingMeter -= 5 # decrease the studying meter by 5
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
         elif agent.type == "party":
-            agent.partyMeter += 8 # increase the party meter by 10
+            agent.partyMeter += 8 # increase the party meter by 8
             agent.studyingMeter -= 5 # decrease the studying meter by 5
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
 
     # if an agent is within the library
     elif agent.distanceTo(libraryLocation_x, libraryLocation_y) < .1:
         if agent.type == "academic":
-            agent.partyMeter -= 5 # increase the party meter by 10
-            agent.studyingMeter += 8 # decrease the studying meter by 5
+            agent.partyMeter -= 5 # decrease the party meter by 5
+            agent.studyingMeter += 8 # increase the studying meter by 8
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
         elif agent.type == "sports":
-            agent.partyMeter -= 5 # increase the party meter by 10
-            agent.studyingMeter += 15 # decrease the studying meter by 5
+            agent.partyMeter -= 5 # decrease the party meter by 5
+            agent.studyingMeter += 15 # increase the studying meter by 15
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
         elif agent.type == "party":
-            agent.studyingMeter -= 5 # increase the study meter by 10
-            agent.partyMeter += 15 # decrease the party meter by 5
+            agent.studyingMeter -= 5 # decrease the study meter by 5
+            agent.partyMeter += 15 # increase the party meter by 15
             agent.exerciseMeter -= 5 # decrease the excercise meter by 5
         
     # if an agent is within the gym
     elif agent.distanceTo(gymLocation_x, gymLocation_y) < .1 :
         if agent.type == "academic":
-            agent.partyMeter -= 5 # increase the party meter by 10
-            agent.studyingMeter -= 5 # decrease the studying meter by 5
-            agent.exerciseMeter += 15 # decrease the excercise meter by 5
-        elif agent.type == "sports":
-            agent.partyMeter -= 5 # increase the party meter by 10
-            agent.studyingMeter -= 5 # decrease the studying meter by 5
-            agent.exerciseMeter += 8 # decrease the excercise meter by 5
-        elif agent.type == "party":
-            agent.studyingMeter -= 5 # increase the study meter by 10
             agent.partyMeter -= 5 # decrease the party meter by 5
-            agent.exerciseMeter += 15 # decrease the excercise meter by 5
+            agent.studyingMeter -= 5 # decrease the studying meter by 5
+            agent.exerciseMeter += 15 # increase the excercise meter by15
+        elif agent.type == "sports":
+            agent.partyMeter -= 5 # decrease the party meter by 5
+            agent.studyingMeter -= 5 # decrease the studying meter by 5
+            agent.exerciseMeter += 8 # increase the excercise meter by 8
+        elif agent.type == "party":
+            agent.studyingMeter -= 5 # decrease the study meter by 5
+            agent.partyMeter -= 5 # decrease the party meter by 5
+            agent.exerciseMeter += 15 # increase the excercise meter by 15
 
     # if an agent is not within any location
     else:
         if agent.type == "academic":
             agent.studyingMeter -= 5 # decrease study meter by 5
-            agent.partyMeter -= 3 # decrease party meter by 5
-            agent.exerciseMeter -= 3 # decrease excercise meter by 5
+            agent.partyMeter -= 3 # decrease party meter by 3
+            agent.exerciseMeter -= 3 # decrease excercise meter by 3
         elif agent.type == "sports":
-            agent.studyingMeter -= 3 # decrease study meter by 5
-            agent.partyMeter -= 3 # decrease party meter by 5
+            agent.studyingMeter -= 3 # decrease study meter by 3
+            agent.partyMeter -= 3 # decrease party meter by 3
             agent.exerciseMeter -= 5 # decrease excercise meter by 5
         elif agent.type == "party":
-            agent.studyingMeter -= 3 # decrease study meter by 5
+            agent.studyingMeter -= 3 # decrease study meter by 3
             agent.partyMeter -= 5 # decrease party meter by 5
-            agent.exerciseMeter -= 3 # decrease excercise meter by 5
+            agent.exerciseMeter -= 3 # decrease excercise meter by 3
     
-    if agent.studyingMeter < 0 :
-        agent.studyingMeter = 0
-    elif agent.studyingMeter > 100 :
-        agent.studyingMeter = 100
+    # used to keep meters of our agents in bounds
+    if agent.studyingMeter < 0 : # if an agents meter is below 0
+        agent.studyingMeter = 0 # meter is equal to 0
+    elif agent.studyingMeter > 100 : # if an agents meter is above 100
+        agent.studyingMeter = 100 # meter is equal to 100
     if agent.partyMeter < 0 :
         agent.partyMeter = 0
     elif agent.partyMeter > 100 :
@@ -373,9 +372,6 @@ def observe():
     ax[0].axis([0, 1, 0, 1]) # Sets the bounds of the x and y axes
 
     # This makes our second subplot, located in axis 1 (graph of populations over time, bottom)
-    # This plot is much easier. We just plot(typ).
-    # Automatically, plot() will put the list index (time) on the x axis and the list value (population) of the y.
-    # The label helps us make a color key/legend.
     
     ax[1].plot(totalInteractions, label = 'Total Interactions')
     ax[1].legend()
@@ -400,7 +396,7 @@ def main():
     f = open("outputFile", 'w')
     global partyLocation_x, partyLocation_y, gymLocation_x, gymLocation_y, libraryLocation_x, libraryLocation_y, agent_list,  interactionsDict, totalInteractions, current_timestep
     
-    #REMEMBER initialize locations differently on different runs
+    #List of location coordinates for parameter sweep
     locations = [[.9, .9, .1, .9, .5, .1], [.4, .4, .6, .4, .5, .6], [.5, .9, .5, .5, .5, .1], [.1, .1, .3, .1, .9, .9], [.9, .9, .1, .1, .3, .1]] # 5 different layouts of our three locations
     
     for coords in locations : # runs for each of the layout
@@ -423,21 +419,19 @@ def main():
             libraryLocation_y = coords[5]
 
 
-            agent_list = []
-            
+            agent_list = [] # giant list of all 150 of our agents
 
+            interactionsDict = {} # keeps track of interactions between agents to make sure we do not double count interactions between the same agents in a single timnestep
+            totalInteractions = [] # keeps track of interactions that occur in each timestep
+            finalInteractions = 0 # keeps track of total interactions that occur in a run
 
-            interactionsDict = {}
-            totalInteractions = []
-            finalInteractions = 0
-
-            current_timestep = 0
+            current_timestep = 0 # used to keep track of our timestep
 
             # create our needed agents 
             initialize()
             
-            # run our model for XXXX timesteps
-            for timestep in range(1):
+            # run our model for 200 timesteps
+            for timestep in range(200):
                 current_timestep = timestep # set current_timestep to the timestep we are on
                 interactionsDict = {} # clear our interactions
                 numInteractions = 0 # counter to keep track of interactions in a given run
@@ -450,7 +444,7 @@ def main():
                     updateMeters(agent) # update an agents meters based on if they are in a location or not
                 
                 totalInteractions.append(numInteractions) # append the number of interactions in this timestep to the list containing total interactions
-                finalInteractions += numInteractions
+                finalInteractions += numInteractions # add the interactions for this timestep to our total
 
                 plt.close()
                 observe() # plot our data
@@ -458,7 +452,7 @@ def main():
                 display.display(plt.gcf())
             plt.close()
 
-            # used for output file to record pe
+            # used for output file to record data
             f.write("Peak interactions: " + str(max(totalInteractions)) + '\n')
             f.write("Total interactions: " + str(finalInteractions) +  '\n') 
 

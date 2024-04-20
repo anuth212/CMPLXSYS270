@@ -1,0 +1,65 @@
+Location Coordinates: party: (0.9, 0.9) gym: (0.1, 0.9) library: (0.5, 0.1) 
+Iteration 0
+Peak interactions: 67
+Total interactions: 6683
+Iteration 1
+Peak interactions: 90
+Total interactions: 7424
+Iteration 2
+Peak interactions: 65
+Total interactions: 6980
+For this layout the average total interactions was 7029.0
+For this layout the average peak number of interactions was 74.0
+
+Location Coordinates: party: (0.4, 0.4) gym: (0.6, 0.4) library: (0.5, 0.6) 
+Iteration 0
+Peak interactions: 404
+Total interactions: 66729
+Iteration 1
+Peak interactions: 427
+Total interactions: 65869
+Iteration 2
+Peak interactions: 403
+Total interactions: 66469
+For this layout the average total interactions was 66355.66666666667
+For this layout the average peak number of interactions was 411.3333333333333
+
+Location Coordinates: party: (0.5, 0.9) gym: (0.5, 0.5) library: (0.5, 0.1) 
+Iteration 0
+Peak interactions: 305
+Total interactions: 45612
+Iteration 1
+Peak interactions: 297
+Total interactions: 45024
+Iteration 2
+Peak interactions: 310
+Total interactions: 45930
+For this layout the average total interactions was 45522.0
+For this layout the average peak number of interactions was 304.0
+
+Location Coordinates: party: (0.1, 0.1) gym: (0.3, 0.1) library: (0.9, 0.9) 
+Iteration 0
+Peak interactions: 105
+Total interactions: 3098
+Iteration 1
+Peak interactions: 78
+Total interactions: 2751
+Iteration 2
+Peak interactions: 88
+Total interactions: 3018
+For this layout the average total interactions was 2955.6666666666665
+For this layout the average peak number of interactions was 90.33333333333333
+
+Location Coordinates: party: (0.9, 0.9) gym: (0.1, 0.1) library: (0.3, 0.1) 
+Iteration 0
+Peak interactions: 84
+Total interactions: 7753
+Iteration 1
+Peak interactions: 117
+Total interactions: 7777
+Iteration 2
+Peak interactions: 98
+Total interactions: 8209
+For this layout the average total interactions was 7913.0
+For this layout the average peak number of interactions was 99.66666666666667
+

@@ -109,7 +109,7 @@ def countNeighbors(agent):
         neigh_x_coordinate = neigh_agent.x_coordinate
         neigh_y_coordinate = neigh_agent.y_coordinate
 
-        # if distance of current agent to potential neighbor is less than 0.05 add to our list
+        # if distance of current agent to potential neighbor is less than 0.03 add to our list
         if agent.distanceTo(neigh_x_coordinate, neigh_y_coordinate) <= 0.03 and agent.type != neigh_agent.type :
             neighborsCount+= 1
             neighbors.append(neigh_agent)
@@ -392,6 +392,55 @@ def observe():
 
     return
 
+
+def run(coords): 
+    global partyLocation_x, partyLocation_y, gymLocation_x, gymLocation_y, libraryLocation_x, libraryLocation_y, agent_list,  interactionsDict, totalInteractions, current_timestep
+    
+    # sets the locations of party, gym, library to their respective coordinates for this layout       
+    partyLocation_x = coords[0]
+    partyLocation_y = coords[1]
+
+    gymLocation_x = coords[2]
+    gymLocation_y = coords[3]
+
+    libraryLocation_x = coords[4]
+    libraryLocation_y = coords[5]
+    
+    agent_list = [] # giant list of all 150 of our agents
+
+    interactionsDict = {} # keeps track of interactions between agents to make sure we do not double count interactions between the same agents in a single timnestep
+    totalInteractions = [] # keeps track of interactions that occur in each timestep
+    finalInteractions = 0 # keeps track of total interactions that occur in a run
+
+    current_timestep = 0 # used to keep track of our timestep
+
+    # create our needed agents 
+    initialize()
+            
+    # run our model for 200 timesteps
+    for timestep in range(200):
+        current_timestep = timestep # set current_timestep to the timestep we are on
+        interactionsDict = {} # clear our interactions
+        numInteractions = 0 # counter to keep track of interactions in a given run
+                
+        copy_agent_list = agent_list # copy our list of agents so that we can shuffle the order they move in
+        random.shuffle(copy_agent_list)
+
+        for agent in copy_agent_list: # for each agent in our agent list
+            numInteractions += rules(agent) # update their movement and keep track of how many interactions they have
+            updateMeters(agent) # update an agents meters based on if they are in a location or not
+                
+        totalInteractions.append(numInteractions) # append the number of interactions in this timestep to the list containing total interactions
+        finalInteractions += numInteractions # add the interactions for this timestep to our total
+
+        plt.close()
+        observe() # plot our data
+        display.clear_output(wait=True)
+        display.display(plt.gcf())
+    plt.close()
+
+    return totalInteractions, finalInteractions
+    
 def main():
     f = open("outputFile", 'w')
     global partyLocation_x, partyLocation_y, gymLocation_x, gymLocation_y, libraryLocation_x, libraryLocation_y, agent_list,  interactionsDict, totalInteractions, current_timestep
@@ -404,53 +453,14 @@ def main():
         f.write("Location Coordinates: party: (" + str(coords[0]) + ", " + str(coords[1]) + ") gym: ("  + str(coords[2]) + ", " + str(coords[3]) + ") library: (" + str(coords[4]) + ", " + str(coords[5]) + ') \n')
         totalForLayout= 0 # used to calculate averages
         avgPeakForLayout = 0
+        total = []
+        peak = []
 
         for i in range(3) : # run each layout 3 times
             f.write("Iteration " + str(i) + '\n')
 
-            # sets the locations of party, gym, library to their respective coordinates for this layout
-            partyLocation_x = coords[0]
-            partyLocation_y = coords[1]
-
-            gymLocation_x = coords[2]
-            gymLocation_y = coords[3]
-
-            libraryLocation_x = coords[4]
-            libraryLocation_y = coords[5]
-
-
-            agent_list = [] # giant list of all 150 of our agents
-
-            interactionsDict = {} # keeps track of interactions between agents to make sure we do not double count interactions between the same agents in a single timnestep
-            totalInteractions = [] # keeps track of interactions that occur in each timestep
-            finalInteractions = 0 # keeps track of total interactions that occur in a run
-
-            current_timestep = 0 # used to keep track of our timestep
-
-            # create our needed agents 
-            initialize()
             
-            # run our model for 200 timesteps
-            for timestep in range(200):
-                current_timestep = timestep # set current_timestep to the timestep we are on
-                interactionsDict = {} # clear our interactions
-                numInteractions = 0 # counter to keep track of interactions in a given run
-                
-                copy_agent_list = agent_list # copy our list of agents so that we can shuffle the order they move in
-                random.shuffle(copy_agent_list)
-
-                for agent in copy_agent_list: # for each agent in our agent list
-                    numInteractions += rules(agent) # update their movement and keep track of how many interactions they have
-                    updateMeters(agent) # update an agents meters based on if they are in a location or not
-                
-                totalInteractions.append(numInteractions) # append the number of interactions in this timestep to the list containing total interactions
-                finalInteractions += numInteractions # add the interactions for this timestep to our total
-
-                plt.close()
-                observe() # plot our data
-                display.clear_output(wait=True)
-                display.display(plt.gcf())
-            plt.close()
+            totalInteractions, finalInteractions = run(coords)
 
             # used for output file to record data
             f.write("Peak interactions: " + str(max(totalInteractions)) + '\n')
@@ -461,11 +471,29 @@ def main():
 
         totalForLayout /= 3 # takes the average of the total number of interactions in each round for this layout
         avgPeakForLayout /=3 # takes the average of the peak number of interactions in each round for this layout
-
+        total.append(totalForLayout)
+        peak.append(avgPeakForLayout)
         # print our data to file
         f.write("For this layout the average total interactions was " + str(totalForLayout) +  '\n')
         f.write("For this layout the average peak number of interactions was " + str(avgPeakForLayout) + '\n')
         f.write( '\n')
+    
+
+    # used to create visualizations of the average total interactions for each layout
+    labels = ['Triangle', 'CloseInMiddle', 'Line', 'LibraryFar', 'GymFar']
+    plt.bar(labels, total)
+    plt.xlabel("Layout")
+    plt.ylabel("Average Total Interactions")
+    plt.title("Average Total Interactions for Layouts")
+    plt.savefig("total")
+    plt.close()
+    # used to create visualizations of the average peak interactions for each layout
+    plt.bar(labels, peak)
+    plt.xlabel("Layout")
+    plt.ylabel("Average Peak Interactions")
+    plt.title("Average Peak Interactions for Layouts")
+    plt.savefig("peak")
+    plt.close()
         
 
 
@@ -473,7 +501,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-#used code from lab 4
+#USED CODE FROM LAB 4
 
 
 #first triangle
@@ -488,7 +516,7 @@ if __name__ == "__main__":
 ##party(.5, .6)
 
 #third line
-##libraru (.5, .9)
+##library (.5, .9)
 #gym (.5 ,.5)
 ##party (.5, .1)
 

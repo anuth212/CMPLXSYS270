@@ -448,14 +448,16 @@ def main():
     #List of location coordinates for parameter sweep
     locations = [[.9, .9, .1, .9, .5, .1], [.4, .4, .6, .4, .5, .6], [.5, .9, .5, .5, .5, .1], [.1, .1, .3, .1, .9, .9], [.9, .9, .1, .1, .3, .1]] # 5 different layouts of our three locations
     
+    # used to keep track of the total and peak for each layout to use in bar graph
+    total = []
+    peak = []
+
     for coords in locations : # runs for each of the layout
         # prints current layout to file
         f.write("Location Coordinates: party: (" + str(coords[0]) + ", " + str(coords[1]) + ") gym: ("  + str(coords[2]) + ", " + str(coords[3]) + ") library: (" + str(coords[4]) + ", " + str(coords[5]) + ') \n')
         totalForLayout= 0 # used to calculate averages
         avgPeakForLayout = 0
-        total = []
-        peak = []
-
+        
         for i in range(3) : # run each layout 3 times
             f.write("Iteration " + str(i) + '\n')
 
@@ -471,28 +473,29 @@ def main():
 
         totalForLayout /= 3 # takes the average of the total number of interactions in each round for this layout
         avgPeakForLayout /=3 # takes the average of the peak number of interactions in each round for this layout
-        total.append(totalForLayout)
-        peak.append(avgPeakForLayout)
+        total.append(totalForLayout) # apend to our total list to plot bargraph
+        peak.append(avgPeakForLayout) # apend to our peak list to plot bargraph
         # print our data to file
         f.write("For this layout the average total interactions was " + str(totalForLayout) +  '\n')
         f.write("For this layout the average peak number of interactions was " + str(avgPeakForLayout) + '\n')
         f.write( '\n')
     
+    f.close()
 
     # used to create visualizations of the average total interactions for each layout
-    labels = ['Triangle', 'CloseInMiddle', 'Line', 'LibraryFar', 'GymFar']
+    labels = ['Triangle', 'CloseInMiddle', 'Line', 'LibraryFar', 'PartyFar']
     plt.bar(labels, total)
     plt.xlabel("Layout")
     plt.ylabel("Average Total Interactions")
     plt.title("Average Total Interactions for Layouts")
-    plt.savefig("total")
+    plt.savefig("total.png")
     plt.close()
     # used to create visualizations of the average peak interactions for each layout
     plt.bar(labels, peak)
     plt.xlabel("Layout")
     plt.ylabel("Average Peak Interactions")
     plt.title("Average Peak Interactions for Layouts")
-    plt.savefig("peak")
+    plt.savefig("peak.png")
     plt.close()
         
 
